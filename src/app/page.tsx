@@ -1,18 +1,26 @@
+import { redirect } from "next/navigation";
 import { db, Product } from "@/lib/db";
+import { getCurrentCustomer } from "@/lib/auth";
 
 // No "use client" here — this is a Server Component (the Next.js default).
 // It runs ONLY on the server, so it can query the database directly,
 // no API call needed. Think of it like Nuxt's server-rendered pages
 // with asyncData, except no client-side JS ships for this part at all
 // unless you add interactivity.
-export default function HomePage() {
+export default async function HomePage() {
+  const customer = await getCurrentCustomer();
+  if (!customer) redirect("/login");
+
   const products = db
     .prepare("SELECT * FROM products ORDER BY id")
     .all() as Product[];
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8">Our Products</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold">Our Products</h1>
+        <p className="text-sm text-gray-500">Welcome, {customer.full_name}</p>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {products.map((product) => (
