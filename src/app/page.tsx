@@ -1,19 +1,15 @@
 import { redirect } from "next/navigation";
 import { db, Product } from "@/lib/db";
 import { getCurrentCustomer } from "@/lib/auth";
+import AddToCartButton from "./AddToCartButton";
 
-// No "use client" here — this is a Server Component (the Next.js default).
-// It runs ONLY on the server, so it can query the database directly,
-// no API call needed. Think of it like Nuxt's server-rendered pages
-// with asyncData, except no client-side JS ships for this part at all
-// unless you add interactivity.
 export default async function HomePage() {
   const customer = await getCurrentCustomer();
   if (!customer) redirect("/login");
 
-  const products = db
-    .prepare("SELECT * FROM products ORDER BY id")
-    .all() as Product[];
+const products = db
+  .prepare("SELECT * FROM products WHERE stock > 0 ORDER BY id")
+  .all() as Product[];
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
@@ -42,6 +38,11 @@ export default async function HomePage() {
                 <span className="text-xs text-red-500">Out of stock</span>
               )}
             </div>
+            <AddToCartButton
+              productId={product.id}
+              name={product.name}
+              price={product.price}
+            />
           </div>
         ))}
       </div>
