@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   }
 
   const total = items.reduce(
-    (sum: number, i: { price: number; quantity: number }) => sum + i.price * i.quantity,
+    (sum: number, i: { cartonPrice: number; quantity: number }) => sum + i.cartonPrice * i.quantity,
     0
   );
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     "INSERT INTO orders (customer_id, total) VALUES (?, ?)"
   );
   const insertItem = db.prepare(
-    `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
+    `INSERT INTO order_items (order_id, product_id, art_no, carton_price, quantity)
      VALUES (?, ?, ?, ?, ?)`
   );
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const orderId = result.lastInsertRowid;
 
     for (const item of items) {
-      insertItem.run(orderId, item.productId, item.name, item.price, item.quantity);
+      insertItem.run(orderId, item.productId, item.artNo, item.cartonPrice, item.quantity);
     }
     return orderId;
   });

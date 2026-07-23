@@ -6,11 +6,11 @@ import { useLanguage } from "@/lib/language-context";
 
 type Props = {
   productId: number;
-  name: string;
-  price: number;
+  artNo: string;
+  cartonPrice: number;
 };
 
-export default function AddToCartButton({ productId, name, price }: Props) {
+export default function AddToCartButton({ productId, artNo, cartonPrice }: Props) {
   const { dispatch } = useCart();
   const { t } = useLanguage();
   const [added, setAdded] = useState(false);
@@ -18,7 +18,7 @@ export default function AddToCartButton({ productId, name, price }: Props) {
   function handleClick() {
     dispatch({
       type: "ADD_ITEM",
-      item: { productId, name, price, quantity: 1 },
+      item: { productId, artNo, cartonPrice, quantity: 1 },
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 1000);

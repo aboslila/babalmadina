@@ -4,8 +4,8 @@ import { createContext, useContext, useReducer, ReactNode } from "react";
 
 export type CartItem = {
   productId: number;
-  name: string;
-  price: number;
+  artNo: string;
+  cartonPrice: number;
   quantity: number;
 };
 

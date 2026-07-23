@@ -1,8 +1,3 @@
-// Reads data/products.xlsx and replaces the products table content with it.
-// Run with: node scripts/import-excel.js
-// This is the "sync" step: client updates the Excel file -> you run this
-// (or later, an admin page calls this same logic) -> DB matches Excel.
-
 const XLSX = require("xlsx");
 const Database = require("better-sqlite3");
 const path = require("path");
@@ -13,6 +8,13 @@ const dbPath = path.join(__dirname, "..", "data", "store.db");
 const workbook = XLSX.readFile(excelPath);
 const sheetName = workbook.SheetNames[0];
 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+const seen = new Map();
+for (const row of rows) {
+  const art = row["ArtNo"];
+  seen.set(art, (seen.get(art) || 0) + 1);
+}
+const duplicates = [...seen.entries()].filter(([, count]) => count > 1);
+console.log("Duplicate ArtNo values:", duplicates);
 
 const db = new Database(dbPath);
 db.pragma("foreign_keys = OFF");
@@ -20,32 +22,32 @@ db.pragma("foreign_keys = OFF");
 db.exec(`
   CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    art_no TEXT NOT NULL UNIQUE,
     category TEXT,
-    price REAL NOT NULL,
-    stock INTEGER NOT NULL DEFAULT 0,
-    image_url TEXT,
-    description TEXT
+    pack INTEGER NOT NULL,
+    ref_code TEXT,
+    unit_price REAL NOT NULL,
+    carton_price REAL NOT NULL,
+    stock INTEGER NOT NULL DEFAULT 0
   )
 `);
 
-// Simplest correct strategy at this scale: wipe and reinsert.
-// (For a bigger catalog we'd diff by name/SKU instead of a full wipe.)
 const insert = db.prepare(`
-  INSERT INTO products (name, category, price, stock, image_url, description)
-  VALUES (@name, @category, @price, @stock, @image_url, @description)
+  INSERT OR REPLACE INTO products (art_no, category, pack, ref_code, unit_price, carton_price, stock)
+  VALUES (@art_no, @category, @pack, @ref_code, @unit_price, @carton_price, @stock)
 `);
 
 const importAll = db.transaction((rows) => {
   db.exec("DELETE FROM products");
   for (const row of rows) {
     insert.run({
-      name: row.name ?? "",
-      category: row.category ?? null,
-      price: Number(row.price) || 0,
-      stock: Number(row.stock) || 0,
-      image_url: row.image_url ?? null,
-      description: row.description ?? null,
+      art_no: row["ArtNo"] ?? "",
+      category: row["Categ"] ?? null,
+      pack: Number(row["pack"]) || 0,
+      ref_code: row["الرمز"] ?? null,
+      unit_price: Number(row["سعر القطعة"]) || 0,
+      carton_price: Number(row["سعر الكرتون"]) || 0,
+      stock: 100, // placeholder — client's sheet has no stock column yet
     });
   }
 });

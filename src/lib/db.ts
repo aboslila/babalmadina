@@ -17,15 +17,16 @@ if (process.env.NODE_ENV !== "production") global.__db = db;
 // Runs once — creates the table if it doesn't exist yet.
 // This is our "migration" for now; fine at this scale.
 db.exec(`
-  CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    category TEXT,
-    price REAL NOT NULL,
-    stock INTEGER NOT NULL DEFAULT 0,
-    image_url TEXT,
-    description TEXT
-  );
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  art_no TEXT NOT NULL UNIQUE,
+  category TEXT,
+  pack INTEGER NOT NULL,        -- pieces per carton
+  ref_code TEXT,                 -- internal only, never shown to customers
+  unit_price REAL NOT NULL,      -- shown for reference
+  carton_price REAL NOT NULL,    -- actual purchasable price
+  stock INTEGER NOT NULL DEFAULT 0
+);
 
   -- Wholesale customers. No self-signup: the shop admin creates these.
   CREATE TABLE IF NOT EXISTS customers (
@@ -58,20 +59,21 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER NOT NULL REFERENCES orders(id),
     product_id INTEGER NOT NULL REFERENCES products(id),
-    product_name TEXT NOT NULL, -- snapshot: name at time of order, in case product changes later
-    unit_price REAL NOT NULL,   -- snapshot: price at time of order
-    quantity INTEGER NOT NULL
+    art_no TEXT NOT NULL,        -- snapshot: identifies the product on the bill
+    carton_price REAL NOT NULL,  -- snapshot: price per carton at order time
+    quantity INTEGER NOT NULL    -- number of cartons ordered
   );
 `);
 
 export type Product = {
   id: number;
-  name: string;
+  art_no: string;
   category: string | null;
-  price: number;
+  pack: number;
+  ref_code: string | null;
+  unit_price: number;
+  carton_price: number;
   stock: number;
-  image_url: string | null;
-  description: string | null;
 };
 
 export type Customer = {
@@ -96,7 +98,7 @@ export type OrderItem = {
   id: number;
   order_id: number;
   product_id: number;
-  product_name: string;
-  unit_price: number;
+  art_no: string;
+  carton_price: number;
   quantity: number;
 };
