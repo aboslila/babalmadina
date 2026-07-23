@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
+import { useLanguage } from "@/lib/language-context";
 
 type Props = {
   productId: number;
@@ -11,6 +12,7 @@ type Props = {
 
 export default function AddToCartButton({ productId, name, price }: Props) {
   const { dispatch } = useCart();
+  const { t } = useLanguage();
   const [added, setAdded] = useState(false);
 
   function handleClick() {
@@ -32,7 +34,7 @@ export default function AddToCartButton({ productId, name, price }: Props) {
         ${added ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
       `}
     >
-      {added ? "Added ✓" : "Add to Cart"}
+      {added ? `${t.added} ✓` : t.addToCart}
     </button>
   );
 }

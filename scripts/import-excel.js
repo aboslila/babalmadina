@@ -15,6 +15,7 @@ const sheetName = workbook.SheetNames[0];
 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
 const db = new Database(dbPath);
+db.pragma("foreign_keys = OFF");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS products (
