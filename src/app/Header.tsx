@@ -12,7 +12,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-10 backdrop-blur bg-white/80 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-      <Link href="/" className="font-extrabold text-xl hover:opacity-80 transition-opacity">
+      <Link
+        href="/"
+        className="font-extrabold text-xl hover:opacity-80 transition-opacity"
+      >
         <span className="text-red-600">Tooba</span>
         <span className="text-blue-600">co</span>
       </Link>

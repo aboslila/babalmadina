@@ -2,31 +2,29 @@
 
 import { useCart } from "@/lib/cart-context";
 import { useLanguage } from "@/lib/language-context";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+
+const WHATSAPP_NUMBER = "218913150612"; // TODO: replace with the client's real number
 
 export default function CartPage() {
   const { state, dispatch } = useCart();
   const { t } = useLanguage();
-  const router = useRouter();
-  const [placing, setPlacing] = useState(false);
 
-  const total = state.items.reduce((sum, i) => sum + i.cartonPrice * i.quantity, 0);
+  const total = state.items.reduce(
+    (sum, i) => sum + i.cartonPrice * i.quantity,
+    0,
+  );
 
-  async function handleCheckout() {
-    setPlacing(true);
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: state.items }),
-    });
-    const data = await res.json();
-    setPlacing(false);
+  function buildWhatsAppLink() {
+    const lines = state.items.map(
+      (item) => `${item.artNo} × ${item.quantity} كرتون`,
+    );
+    const message = `مرحباً، أريد طلب:\n${lines.join("\n")}`;
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }
 
-    if (res.ok) {
-      dispatch({ type: "CLEAR_CART" });
-      router.push(`/bill/${data.orderId}`);
-    }
+  function handleCheckout() {
+    window.open(buildWhatsAppLink(), "_blank");
+    dispatch({ type: "CLEAR_CART" });
   }
 
   if (state.items.length === 0) {
@@ -48,49 +46,47 @@ export default function CartPage() {
         {state.items.map((item) => (
           <div
             key={item.productId}
-            className="border border-gray-200 dark:border-gray-800 rounded-2xl p-3 flex items-center gap-4 bg-white dark:bg-gray-950"
+            className="border border-gray-200 rounded-2xl p-3 flex items-center gap-4 bg-white"
           >
             <img
               src={`/products/${item.artNo}.jpg`}
               alt={item.artNo}
-              className="w-16 h-16 rounded-lg object-cover bg-gray-100 dark:bg-gray-900 shrink-0"
+              className="w-16 h-16 rounded-lg object-cover bg-gray-100 shrink-0"
               onError={(e) => {
-                e.currentTarget.src =
-                  "data:image/svg+xml;utf8," +
-                  encodeURIComponent(
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" fill="%23e5e7eb"/></svg>'
-                  );
+                e.currentTarget.style.visibility = "hidden";
               }}
             />
-
             <div className="flex-1 min-w-0">
               <p className="font-semibold truncate">{item.artNo}</p>
-              <p dir="rtr" className="text-sm text-green-700 font-medium">
-                {item.cartonPrice.toFixed(2)} <span className="text-red-500">دينار ليبي</span>
+              <p dir="ltr" className="text-sm text-red-600 font-medium">
+                {item.cartonPrice.toFixed(2)}{" "}
+                <span className="text-gray-500">دينار ليبي</span>
               </p>
             </div>
-
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => dispatch({ type: "DECREASE_ITEM", productId: item.productId })}
-                className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                onClick={() =>
+                  dispatch({ type: "DECREASE_ITEM", productId: item.productId })
+                }
+                className="w-7 h-7 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 −
               </button>
-              <span className="w-6 text-center font-medium">{item.quantity}</span>
+              <span className="w-6 text-center font-medium">
+                {item.quantity}
+              </span>
               <button
                 onClick={() =>
-                  dispatch({
-                    type: "ADD_ITEM",
-                    item: { ...item, quantity: 1 },
-                  })
+                  dispatch({ type: "ADD_ITEM", item: { ...item, quantity: 1 } })
                 }
-                className="w-7 h-7 rounded-full border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+                className="w-7 h-7 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
               >
                 +
               </button>
               <button
-                onClick={() => dispatch({ type: "REMOVE_ITEM", productId: item.productId })}
+                onClick={() =>
+                  dispatch({ type: "REMOVE_ITEM", productId: item.productId })
+                }
                 className="text-red-600 text-xs ml-1 hover:underline"
               >
                 {t.remove}
@@ -100,19 +96,19 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-gray-200 dark:border-gray-800">
+      <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-gray-200">
         <span>{t.total}</span>
-        <span dir="rtr" className="text-green-700">
-          {total.toFixed(2)} <span className="text-sm text-red-500">دينار ليبي</span>
+        <span dir="ltr" className="text-blue-600">
+          {total.toFixed(2)}{" "}
+          <span className="text-sm text-gray-500">دينار ليبي</span>
         </span>
       </div>
 
       <button
         onClick={handleCheckout}
-        disabled={placing}
-        className="bg-red-600 hover:bg-red-700 text-white rounded-full py-3 font-semibold transition-colors disabled:opacity-50"
+        className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 font-semibold transition-colors flex items-center justify-center gap-2"
       >
-        {placing ? t.placingOrder : t.confirmOrder}
+        📱 إرسال الطلب عبر واتساب
       </button>
     </main>
   );
