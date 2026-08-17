@@ -3,6 +3,8 @@ import AddToCartButton from "./AddToCartButton";
 import ProductImage from "./ProductImage";
 import PageHeading from "./PageHeading";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const products = db
     .prepare("SELECT * FROM products WHERE stock > 0 ORDER BY id")
