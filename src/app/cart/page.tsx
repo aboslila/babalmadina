@@ -58,9 +58,9 @@ export default function CartPage() {
             />
             <div className="flex-1 min-w-0">
               <p className="font-semibold truncate">{item.artNo}</p>
-              <p dir="ltr" className="text-sm text-red-600 font-medium">
+              <p dir="rtl" className="text-sm text-red-800 font-medium">
                 {item.cartonPrice.toFixed(2)}{" "}
-                <span className="text-gray-500">دينار ليبي</span>
+                <span className="text-green-800">دينار ليبي</span>
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -98,9 +98,9 @@ export default function CartPage() {
 
       <div className="flex justify-between items-center font-bold text-lg pt-4 border-t border-gray-200">
         <span>{t.total}</span>
-        <span dir="ltr" className="text-blue-600">
+        <span dir="rtl" className="text-red-800">
           {total.toFixed(2)}{" "}
-          <span className="text-sm text-gray-500">دينار ليبي</span>
+          <span className="text-sm text-green-800 ">دينار ليبي</span>
         </span>
       </div>
 
