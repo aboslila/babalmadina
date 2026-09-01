@@ -16,9 +16,10 @@ export default function CartPage() {
 
   function buildWhatsAppLink() {
     const lines = state.items.map(
-      (item) => `${item.artNo} × ${item.quantity} كرتون`,
+      (item) =>
+        `${item.artNo} × ${item.quantity} كرتون - ${(item.cartonPrice * item.quantity).toFixed(2)} د.ل`,
     );
-    const message = `مرحباً، أريد طلب:\n${lines.join("\n")}`;
+    const message = `مرحباً، أريد طلب:\n${lines.join("\n")}\n\nالمجموع: ${total.toFixed(2)} دينار ليبي`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   }
 
