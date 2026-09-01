@@ -21,7 +21,7 @@ export function getCategoryGroup(category: string | null): CategoryGroup {
 
 export const categoryGroupLabels: Record<CategoryGroup, string> = {
   men: "رجالي",
-  lady: "حريمي",
+  lady: "نساء",
   boy: "أولاد",
   child: "أطفال",
   baby: "رضّع",
