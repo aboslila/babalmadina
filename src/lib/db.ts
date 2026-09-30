@@ -9,7 +9,10 @@ declare global {
   var __db: Database.Database | undefined;
 }
 
-const dbPath = path.join(process.cwd(), "data", "store.db");
+// Overridable so scripts and tests can point at a throwaway database
+// instead of the live store.
+const dbPath =
+  process.env.STORE_DB_PATH ?? path.join(process.cwd(), "data", "store.db");
 
 export const db = global.__db ?? new Database(dbPath);
 if (process.env.NODE_ENV !== "production") global.__db = db;

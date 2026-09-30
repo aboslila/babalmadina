@@ -7,6 +7,7 @@ export type CartItem = {
   artNo: string;
   cartonPrice: number;
   quantity: number;
+  stock: number;
 };
 
 type CartState = { items: CartItem[] };

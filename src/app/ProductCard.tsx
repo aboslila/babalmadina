@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Product } from "@/lib/db";
 import AddToCartButton from "./AddToCartButton";
 import ProductImage from "./ProductImage";
@@ -20,20 +20,33 @@ export function ProductCard({
       <div className="bg-gray-100 h-40 rounded-xl overflow-hidden">
         <ProductImage artNo={product.art_no} />
       </div>
-      <h2 className="font-semibold mt-1">{product.art_no}</h2>
-      <p className="text-xs uppercase tracking-wide text-blue-600 font-medium">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold mt-1">{product.art_no}</h2>
+        <span
+          className={`shrink-0 text-2xs font-medium px-2 py-0.5 rounded-full ${
+            product.stock > 0
+              ? "bg-green-50 text-green-700"
+              : "bg-red-50 text-red-600"
+          }`}
+        >
+          {product.stock > 0
+            ? `متوفر: ${product.stock} قطعة`
+            : "غير متوفر"}
+        </span>
+      </div>
+      <p className="text-1xl uppercase tracking-wide text-black font-medium">
         {product.category}
       </p>
-      <p className="text-sm text-gray-500">{product.pack} قطعة / كرتون</p>
+      <p className="text-sm text-gray-800">{product.pack} قطعة / كرتون</p>
       <div className="flex items-baseline justify-between pt-2">
         <div className="flex items-baseline gap-1">
-          <span dir="ltr" className="font-bold text-lg text-red-600">
+          <span dir="ltr" className="font-bold text-lg text-black-800">
             {product.carton_price.toFixed(2)} 
           </span>
-          <span className="text-sm text-gray-800">دينار ليبي</span>
+          <span className="text-xm text-black-200">د.ل</span>
         </div>
-        <span dir="rtl" className="text-xs text-gray-800">
-          {product.unit_price.toFixed(2)} قطعة / د.ل
+        <span dir="rtl" className="text-xm text-black-800">
+          {product.unit_price.toFixed(2)} <span className="test-xm text-black"> د.ل / قطعة  </span> 
         </span>
       </div>
       <div onClick={(e) => e.stopPropagation()}>
@@ -41,6 +54,7 @@ export function ProductCard({
           productId={product.id}
           artNo={product.art_no}
           cartonPrice={product.carton_price}
+          stock={product.stock}
         />
       </div>
     </div>
@@ -91,20 +105,30 @@ export function ProductPopup({
         </div>
 
         <h2 className="font-bold text-xl mt-2">{product.art_no}</h2>
-        <p className="text-sm uppercase tracking-wide text-blue-600 font-medium">
+        <p className="text-lm uppercase tracking-wide text-black font-medium">
           {product.category}
         </p>
-        <p className="text-sm text-gray-500">{product.pack} قطعة / كرتون</p>
+        <p className="text-xl text-black">{product.pack} قطعة / كرتون</p>
+        <p
+          className={`text-lg font-medium ${
+            product.stock > 0 ? "text-green-700" : "text-red-600"
+          }`}
+        >
+          {product.stock > 0
+            ? `الكمية المتوفرة: ${product.stock} قطعة`
+            : "غير متوفر حالياً"}
+        </p>
 
         <div className="flex items-baseline justify-between pt-2 border-t border-gray-100">
           <div className="flex items-baseline gap-1">
-            <span dir="ltr" className="font-bold text-2xl text-red-600">
+            <span dir="ltr" className="font-bold text-2xl text-black">
               {product.carton_price.toFixed(2)}
             </span>
-            <span className="text-sm text-gray-500">دينار ليبي</span>
+            <span className="text-xl text-black">د.ل</span>
           </div>
-          <span dir="rtl" className="text-sm text-gray-800">
-            {product.unit_price.toFixed(2) } قطعة /  د.ل 
+          <span dir="rtl" className="text-xl text-black">
+            {product.unit_price.toFixed(2)}{" "} 
+            <span className="test-xm text-black"> د.ل / قطعة </span>
           </span>
         </div>
 
@@ -112,6 +136,7 @@ export function ProductPopup({
           productId={product.id}
           artNo={product.art_no}
           cartonPrice={product.carton_price}
+          stock={product.stock}
         />
       </div>
     </div>

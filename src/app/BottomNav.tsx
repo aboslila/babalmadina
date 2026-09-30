@@ -6,10 +6,7 @@ import { usePathname } from "next/navigation";
 export default function BottomNav() {
   const pathname = usePathname();
 
-  const items = [
-    { href: "/", label: "الرئيسية", icon: "🏠" },
-    { href: "/products", label: "المنتجات", icon: "🛍️" },
-  ];
+  const items = [{ href: "/", label: "الرئيسية", icon: "🏠" }];
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 flex justify-around py-2">

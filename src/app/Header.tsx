@@ -11,18 +11,24 @@ export default function Header() {
   const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
-    <header className="sticky top-0 z-10 backdrop-blur bg-white/80 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-10 backdrop-blur bg-white/80 border-b border-gray-200 px-4 sm:px-6 py-4 grid grid-cols-3 items-center">
       <Link
         href="/"
-        className="font-extrabold text-xl hover:opacity-80 transition-opacity"
+        className="justify-self-start font-extrabold text-xl hover:opacity-80 transition-opacity"
       >
         <span className="text-red-600">Tooba</span>
         <span className="text-blue-600">co</span>
       </Link>
 
+      {/* Market name — static label, not a link */}
+      <span className="justify-self-center text-3xl font-bold text-blue-600 whitespace-nowrap">
+        باب<span className="text-red-600"> المدينة </span>
+      </span>
+
+
       <Link
         href="/cart"
-        className="relative flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
+        className="justify-self-end relative flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
       >
         🛒 {t.cart}
         {itemCount > 0 && (
